@@ -9,9 +9,6 @@ from playwright.async_api import async_playwright
 from jinja2 import Template
 import httpx
 from datetime import datetime
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaInMemoryUpload
 from PIL import Image
 from io import BytesIO
 
@@ -24,8 +21,6 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 LINE_SECRET = os.getenv("LINE_CHANNEL_SECRET")
 LINE_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN")
-GOOGLE_CREDENTIALS_FILE = os.getenv("GOOGLE_CREDENTIALS_FILE", "google-credentials.json")
-GOOGLE_DRIVE_FOLDER_ID = os.getenv("GOOGLE_DRIVE_FOLDER_ID", "")  # 可選：指定上傳資料夾
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -37,64 +32,6 @@ def verify_signature(body, signature):
         hashlib.sha256
     ).digest()
     return base64.b64encode(hash).decode() == signature
-
-# ========= 上傳到 Google Drive =========
-def upload_to_google_drive(pdf_bytes, filename):
-    """上傳 PDF 到 Google Drive 並返回分享連結"""
-    try:
-        # 設定憑證
-        SCOPES = ['https://www.googleapis.com/auth/drive.file']
-        credentials = service_account.Credentials.from_service_account_file(
-            GOOGLE_CREDENTIALS_FILE, scopes=SCOPES
-        )
-        
-        # 建立 Drive API 服務
-        service = build('drive', 'v3', credentials=credentials)
-        
-        # 準備檔案 metadata
-        file_metadata = {
-            'name': filename,
-            'mimeType': 'application/pdf'
-        }
-        
-        # 如果有指定資料夾，加入 parents
-        if GOOGLE_DRIVE_FOLDER_ID:
-            file_metadata['parents'] = [GOOGLE_DRIVE_FOLDER_ID]
-        
-        # 上傳檔案
-        media = MediaInMemoryUpload(
-            pdf_bytes,
-            mimetype='application/pdf',
-            resumable=True
-        )
-        
-        file = service.files().create(
-            body=file_metadata,
-            media_body=media,
-            fields='id, webViewLink, webContentLink'
-        ).execute()
-        
-        file_id = file.get('id')
-        
-        # 設定為任何人都可以查看
-        permission = {
-            'type': 'anyone',
-            'role': 'reader'
-        }
-        service.permissions().create(
-            fileId=file_id,
-            body=permission
-        ).execute()
-        
-        # 獲取分享連結
-        share_link = f"https://drive.google.com/file/d/{file_id}/view?usp=sharing"
-        
-        print(f"✅ 檔案已上傳到 Google Drive: {share_link}")
-        return share_link
-        
-    except Exception as e:
-        print(f"❌ Google Drive 上傳失敗: {str(e)}")
-        raise
 
 # ========= 產 PDF =========
 async def generate_pdf(html):
