@@ -60,7 +60,7 @@ async def generate_pdf(html):
         return pdf
 
 # ========= Webhook =========
-@app.post("/line/webhook")
+@app.post("/webhook")
 async def webhook(request: Request):
     try:
         body = await request.body()
