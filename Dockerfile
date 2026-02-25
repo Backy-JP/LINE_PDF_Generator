@@ -50,4 +50,4 @@ COPY . .
 EXPOSE 8080
 
 # 啟動命令
-CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
+CMD ["sh", "-c", "echo 'Starting application...' && uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}"]
