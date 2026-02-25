@@ -2,6 +2,7 @@ import os
 import hmac
 import base64
 import hashlib
+import io
 from fastapi import FastAPI, Request
 from dotenv import load_dotenv
 from supabase import create_client
@@ -11,6 +12,9 @@ import httpx
 from datetime import datetime
 from PIL import Image
 from io import BytesIO
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseUpload
 
 load_dotenv()
 
@@ -21,6 +25,8 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 LINE_SECRET = os.getenv("LINE_CHANNEL_SECRET")
 LINE_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN")
+GOOGLE_CREDENTIALS_FILE = os.getenv("GOOGLE_CREDENTIALS_FILE")
+GOOGLE_DRIVE_FOLDER_ID = os.getenv("GOOGLE_DRIVE_FOLDER_ID")
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -58,6 +64,55 @@ async def generate_pdf(html):
         )
         await browser.close()
         return pdf
+
+# ========= 上傳到 Google Drive =========
+def upload_to_google_drive(pdf_bytes, filename):
+    """上傳 PDF 到 Google Drive 並返回可分享的連結"""
+    try:
+        # 載入服務帳號憑證
+        credentials = service_account.Credentials.from_service_account_file(
+            GOOGLE_CREDENTIALS_FILE,
+            scopes=['https://www.googleapis.com/auth/drive.file']
+        )
+        
+        # 建立 Drive API 服務
+        service = build('drive', 'v3', credentials=credentials)
+        
+        # 準備檔案元數據
+        file_metadata = {
+            'name': filename,
+            'parents': [GOOGLE_DRIVE_FOLDER_ID]  # 指定上傳到哪個資料夾
+        }
+        
+        # 將 bytes 轉換為 BytesIO 物件
+        file_stream = io.BytesIO(pdf_bytes)
+        media = MediaIoBaseUpload(file_stream, mimetype='application/pdf', resumable=True)
+        
+        # 上傳檔案
+        file = service.files().create(
+            body=file_metadata,
+            media_body=media,
+            fields='id'
+        ).execute()
+        
+        file_id = file.get('id')
+        print(f"✅ 檔案已上傳到 Google Drive，檔案ID: {file_id}")
+        
+        # 設定檔案權限為任何人都可以查看
+        service.permissions().create(
+            fileId=file_id,
+            body={'type': 'anyone', 'role': 'reader'}
+        ).execute()
+        
+        # 生成可分享的連結
+        download_link = f"https://drive.google.com/file/d/{file_id}/view?usp=sharing"
+        print(f"✅ 分享連結: {download_link}")
+        
+        return download_link
+        
+    except Exception as e:
+        print(f"❌ Google Drive 上傳失敗: {e}")
+        return None
 
 # ========= Webhook =========
 @app.post("/line/webhook")
@@ -332,30 +387,28 @@ async def webhook(request: Request):
             return {"error": error_msg}
         
         # 準備檔案名稱
-        file_name = f"exports/shopping_list_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
-        print(f"📤 上傳 PDF 到 Supabase: {file_name}")
+        file_name = f"shopping_list_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        print(f"📤 上傳 PDF 到 Google Drive: {file_name}")
 
         try:
-            # 上傳到 Supabase
-            upload_result = supabase.storage.from_("Product_images").upload(
-                file_name,
-                pdf_bytes,
-                {"content-type": "application/pdf", "upsert": "true"}
-            )
-            print(f"上傳結果: {upload_result}")
+            # 上傳到 Google Drive
+            download_url = upload_to_google_drive(pdf_bytes, file_name)
             
-            # 生成 Signed URL
-            signed = supabase.storage.from_("Product_images").create_signed_url(
-                file_name, 3600  # 1小時有效
-            )
-            print(f"Signed URL 回應: {signed}")
-
-            download_url = signed.get("signedURL") or signed.get("signed_url")
             if not download_url:
-                print(f"❌ 無法取得 Signed URL: {signed}")
-                return {"error": f"Signed URL missing: {signed}"}
+                print(f"❌ Google Drive 上傳失敗")
+                # 回傳錯誤訊息給 LINE
+                async with httpx.AsyncClient() as client:
+                    await client.post(
+                        "https://api.line.me/v2/bot/message/reply",
+                        headers={"Authorization": f"Bearer {LINE_TOKEN}"},
+                        json={
+                            "replyToken": reply_token,
+                            "messages": [{"type": "text", "text": f"❌ 上傳失敗，請稍後再試"}]
+                        }
+                    )
+                return {"error": "Google Drive upload failed"}
             
-            print(f"✅ 下載連結: {download_url}")
+            print(f"✅ Google Drive 連結: {download_url}")
             
         except Exception as upload_error:
             error_msg = f"上傳失敗: {str(upload_error)}"
@@ -386,7 +439,7 @@ async def webhook(request: Request):
                     "messages": [
                         {
                             "type": "text",
-                            "text": f"✅ 購物單已生成！\n\n📄 下方連結查看：\n{download_url}\n\n📊 共 {len(result)} 筆資料\n\n⏰ 有效期限：1 hr"
+                            "text": f"✅ 購物單已生成！\n\n📄 Google Drive 連結：\n{download_url}\n\n📊 共 {len(result)} 筆資料"
                         }
                     ]
                 }
