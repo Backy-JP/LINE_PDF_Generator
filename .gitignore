@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# 環境變數（重要！）
+.env
+google-credentials.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 測試檔案
+test_*.py
+
+# Playwright
+.playwright/
+
+# 其他
+*.log
+*.pdf
