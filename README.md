@@ -1,5 +1,26 @@
 # LINE PDF Generator - 購物單生成器
 
+<div align="center">
+
+## 🚀 LINE x AI 全自動代購革命
+
+**📸 拍照 → 🤖 AI 辨識 → 🛒 購物車 → 📄 PDF 訂單**
+
+### 訂單輸出模組：一鍵下載精美購物單 PDF
+
+</div>
+
+> 💡 **完整解決方案 - 三大專案打造極致代購體驗**  
+> 本專案是 **LINE x AI 自動化代購生態系統** 的訂單輸出模組，需配合以下專案完整運作：
+> 
+> 1. **[AI-Driven Product Ingestion Pipeline](https://github.com/Backy-JP/AI-Driven_Product_Ingestion_Pipeline_with_LINE_LIFF_and_n8n)** - 📸 拍照上傳 + 🤖 AI 商品辨識與資料自動化建檔
+> 2. **[LINE LIFF Ecommerce Cart](https://github.com/Backy-JP/LINE_LIFF_Ecommerce_Cart)** - 🛒 LINE 購物車與訂單系統
+> 3. **[LINE PDF Generator](https://github.com/Backy-JP/LINE_PDF_Generator)** - 📄 本專案：一鍵生成購物清單 PDF
+> 
+> **從商品拍攝到訂單下載，全程 LINE 完成，無需跳轉外部平台！**
+
+---
+
 一個整合 LINE Bot 的 PDF 購物單生成系統，可自動從 Supabase 資料庫取得訂單資料，生成包含產品圖片的精美 PDF 報表。
 
 ## ✨ 功能特色
@@ -95,21 +116,22 @@ line_pdf/
 1. **點擊圖文選單按鈕**（如已設定）
 2. **或傳送文字訊息**：`下載購物單`
 
-### 📱 LINE 對話示範
+### 📱 功能展示
 
-點擊圖文選單後，系統會自動生成購物單並回傳下載連結：
-
-<img src="./images/line-chat.png" width="300" alt="LINE 對話示範">
-
-*▲ 點擊「下載購物單」按鈕後，系統回覆包含 PDF 下載連結的訊息*
-
-### 📄 生成的 PDF 報表
-
-點擊下載連結後，可查看包含產品圖片的購物單報表：
-
-<img src="./images/pdf-sample.png" width="300" alt="PDF 報表範例">
-
-*▲ PDF 報表包含訂單編號、商品編號、產品圖片和數量*
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="./images/line-chat.png" width="350" alt="LINE 對話示範"><br/>
+      <b>📱 LINE 對話流程</b><br/>
+      <sub>點擊「下載購物單」按鈕後，系統自動回覆 PDF 下載連結</sub>
+    </td>
+    <td width="50%" align="center">
+      <img src="./images/pdf-sample.png" width="350" alt="PDF 報表範例"><br/>
+      <b>📄 PDF 購物單報表</b><br/>
+      <sub>包含訂單編號、商品編號、產品圖片與數量的完整報表</sub>
+    </td>
+  </tr>
+</table>
 
 ### 🔄 處理流程
 
