@@ -284,11 +284,15 @@ create_signed_url(file_name, 3600)  →  create_signed_url(file_name, 7200)
 
 本專案僅供個人使用與學習。
 
-## 🤝 貢獻
+## 👨‍💻 作者
 
-如有任何問題或建議，歡迎提出！
+**Pei (Backy-JP)**
+
+- **Email**: jiapei311157@gmail.com
+- **GitHub**: [@Backy-JP](https://github.com/Backy-JP)
 
 ---
 
-**最後更新**：2026-02-25  
-**版本**：2.0.0（使用 Supabase Storage）
+**Built with ❤️ using FastAPI + Playwright + Supabase**  
+**最後更新**：2026-02-25 | **版本**：2.0.0
+
