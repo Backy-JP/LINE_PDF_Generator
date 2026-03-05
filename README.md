@@ -2,7 +2,7 @@
 
 <div align="center">
 
-## 🚀 LINE x AI 全自動代購革命
+## LINE x AI 全自動代購革命
 
 **📸 拍照 → 🤖 AI 辨識 → 🛒 購物車 → 📄 PDF 訂單**
 
@@ -10,12 +10,12 @@
 
 </div>
 
-> 💡 **完整解決方案 - 三大專案打造極致代購體驗**  
+> **完整解決方案 - 三大專案打造極致代購體驗**  
 > 本專案是 **LINE x AI 自動化代購生態系統** 的訂單輸出模組，需配合以下專案完整運作：
 > 
-> 1. **[AI-Driven Product Ingestion Pipeline](https://github.com/Backy-JP/AI-Driven_Product_Ingestion_Pipeline_with_LINE_LIFF_and_n8n)** - 📸 拍照上傳 + 🤖 AI 商品辨識與資料自動化建檔
-> 2. **[LINE LIFF Ecommerce Cart](https://github.com/Backy-JP/LINE_LIFF_Ecommerce_Cart)** - 🛒 LINE 購物車與訂單系統
-> 3. **[LINE PDF Generator](https://github.com/Backy-JP/LINE_PDF_Generator)** - 📄 本專案：一鍵生成購物清單 PDF
+> 1. **[AI-Driven Product Ingestion Pipeline](https://github.com/Backy-JP/AI-Driven_Product_Ingestion_Pipeline_with_LINE_LIFF_and_n8n)** - 拍照上傳 + AI 商品辨識與資料自動化建檔
+> 2. **[LINE LIFF Ecommerce Cart](https://github.com/Backy-JP/LINE_LIFF_Ecommerce_Cart)** - LINE 購物車與訂單系統
+> 3. **[LINE PDF Generator](https://github.com/Backy-JP/LINE_PDF_Generator)** - 本專案：一鍵生成購物清單 PDF
 > 
 > **從商品拍攝到訂單下載，全程 LINE 完成，無需跳轉外部平台！**
 
@@ -23,23 +23,23 @@
 
 一個整合 LINE Bot 的 PDF 購物單生成系統，可自動從 Supabase 資料庫取得訂單資料，生成包含產品圖片的精美 PDF 報表。
 
-## ✨ 功能特色
+## 功能特色
 
-- 📱 **LINE Bot 整合**：透過圖文選單或文字訊息觸發
-- 📊 **自動生成 PDF**：包含訂單編號、商品編號、數量和產品圖片
-- 🖼️ **智慧圖片處理**：自動壓縮並嵌入圖片，避免載入問題
-- ☁️ **Supabase 儲存**：PDF 自動上傳至 Supabase Storage
-- 🔗 **即時分享**：產生有效期 1 小時的下載連結
-- 🎨 **美觀設計**：表格清晰易讀
+- **LINE Bot 整合**：透過圖文選單或文字訊息觸發
+- **自動生成 PDF**：包含訂單編號、商品編號、數量和產品圖片
+- **智慧圖片處理**：自動壓縮並嵌入圖片，避免載入問題
+- **Supabase 儲存**：PDF 自動上傳至 Supabase Storage
+- **即時分享**：產生有效期 1 小時的下載連結
+- **美觀設計**：表格清晰易讀
 
-## 📋 系統需求
+## 系統需求
 
 - Python 3.9+
 - ngrok（用於本地開發）
 - LINE Messaging API 帳號
 - Supabase 帳號
 
-## 🚀 快速開始
+## 快速開始
 
 ### 1. 安裝依賴
 
@@ -109,14 +109,14 @@ line_pdf/
 └── venv/                # Python 虛擬環境
 ```
 
-## 🎯 使用方式
+## 使用方式
 
 在 LINE 聊天室中：
 
 1. **點擊圖文選單按鈕**（如已設定）
 2. **或傳送文字訊息**：`下載購物單`
 
-### 📱 功能展示
+### 功能展示
 
 <table>
   <tr>
@@ -133,7 +133,7 @@ line_pdf/
   </tr>
 </table>
 
-### 🔄 處理流程
+### 處理流程
 
 系統會自動：
 - 查詢最新 10 筆訂單資料
@@ -142,7 +142,7 @@ line_pdf/
 - 上傳到 Supabase Storage
 - 回傳下載連結（有效期 1 小時）
 
-## 🗃️ 資料庫結構
+## 資料庫結構
 
 ### order_items 表
 
@@ -166,7 +166,7 @@ line_pdf/
 - **用途**：儲存產品圖片和生成的 PDF
 - **權限**：建議設為公開讀取
 
-## 🛠️ 技術棧
+## 技術
 
 - **FastAPI**：高效能 Web 框架
 - **Playwright**：無頭瀏覽器，用於 PDF 生成
@@ -175,9 +175,9 @@ line_pdf/
 - **Pillow**：圖片處理與壓縮
 - **Jinja2**：HTML 模板引擎
 
-## 🔧 故障排除
+## 故障排除
 
-### ❌ LINE Bot 沒反應
+### LINE Bot 沒反應
 
 1. 檢查 FastAPI 服務器是否運行：`lsof -ti :8000`
 2. 檢查 ngrok 是否運行：`ps aux | grep ngrok`
@@ -185,21 +185,21 @@ line_pdf/
 4. 查看 FastAPI 終端的日誌輸出
 5. 確認 Webhook 路徑為 `/webhook`（不是 `/line/webhook`）
 
-### 🖼️ PDF 沒有圖片
+### PDF 沒有圖片
 
 - 檢查 `product_images_2` 表是否有對應的 `product_id`
 - 確認圖片路徑正確且可訪問
 - 查看終端日誌中的圖片下載狀態
 - 確認 Supabase Storage 的 `Product_images` bucket 存在
 
-### 📤 上傳失敗
+### 上傳失敗
 
 - 確認 Supabase URL 和 Service Role Key 正確
 - 檢查 `Product_images` bucket 是否已建立
 - 確認 PDF 檔案大小未超過 10MB
 - 查看終端詳細錯誤訊息
 
-### 🔄 修改後未生效
+### 修改後未生效
 
 FastAPI 使用 `--reload` 參數會自動重載，但如果有問題：
 
@@ -212,7 +212,7 @@ cd /Users/hsiehjiapei/Desktop/line_pdf
 /Users/hsiehjiapei/Desktop/line_pdf/venv/bin/python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-## 📝 常用指令速查
+## 常用指令速查
 
 ### 啟動服務器（完整流程）
 
@@ -242,7 +242,7 @@ lsof -ti :8000
 ps aux | grep ngrok | grep -v grep
 ```
 
-## 🎨 自訂設定
+## 自訂設定
 
 ### 修改查詢筆數
 
@@ -280,11 +280,11 @@ quality=40  →  quality=60
 create_signed_url(file_name, 3600)  →  create_signed_url(file_name, 7200)
 ```
 
-## 📄 授權
+## 授權
 
 本專案僅供個人使用與學習。
 
-## 👨‍💻 作者
+## 作者
 
 **Pei (Backy-JP)**
 
